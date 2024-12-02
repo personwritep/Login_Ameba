@@ -1,0 +1,44 @@
+// ==UserScript==
+// @name         Login Ameba
+// @namespace    http://tampermonkey.net/
+// @version      0.4
+// @description  ブログページで自動ログイン
+// @author       Ameba Blog User
+// @match        https://ameblo.jp/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=ameblo.jp
+// @noframes
+// @grant        none
+// ==/UserScript==
+
+
+
+if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しない
+
+    let yy_pos=sessionStorage.getItem('LA_pos');
+    if(yy_pos>0){
+        window.scrollTo(0, yy_pos);
+        sessionStorage.setItem('LA_pos', 0); }
+
+
+
+    let retry=0;
+    let interval=setInterval(wait_target, 500);
+    function wait_target(){
+        retry++;
+        if(retry>4){ // リトライ制限 4回 2secまで
+            try_login();
+            clearInterval(interval); }
+        let login_user=document.querySelector('._3qMawLFY');
+        if(login_user){
+            clearInterval(interval); }}
+
+
+    function try_login(){
+        let y_pos=document.documentElement.scrollTop
+        sessionStorage.setItem('LA_pos', y_pos);
+
+        let sw=document.querySelector('._Ja750p9p > a');
+        if(sw){
+            sw.click(); }}
+
+} // if(location.hash!='#cbox')
