@@ -1,0 +1,112 @@
+// ==UserScript==
+// @name         Login Ameba Count
+// @namespace    http://tampermonkey.net/
+// @version      0.5
+// @description  ブログページでログイン・アウト状況のカウンター
+// @author       Ameba Blog User
+// @match        https://ameblo.jp/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=ameblo.jp
+// @noframes
+// @grant        none
+// ==/UserScript==
+
+
+
+let retry=0;
+let interval=setInterval(wait_target, 500);
+function wait_target(){
+    retry++;
+    if(retry>10){ // リトライ制限 10回 5secまで
+        check_login();
+        clearInterval(interval); }}
+
+
+
+function check_login(){
+    let LAC=get_cookie('LAC_count');
+    if(LAC==0){
+        LAC='0　0'; //「Login　Logout」
+        document.cookie='LAC_count='+ LAC +'; path=/; Max-Age=604800'; } // 7日
+    let LAC_data=LAC.split('　');
+
+    let login_user=document.querySelector('._3qMawLFY');
+    if(login_user){
+        LAC_data[0]=LAC_data[0]/1+1; }
+    else{
+        LAC_data[1]=LAC_data[1]/1+1; }
+    LAC=LAC_data[0]+'　'+LAC_data[1];
+    document.cookie='LAC_count='+ LAC +'; path=/; Max-Age=604800'; // 7日
+
+
+    let topics=document.querySelector('._TiKJItsG');
+    if(topics){
+        let sw=
+            '<div id="lac">*️⃣'+
+            '<style>'+
+            '#lac { position: relative; font-size: 27px; line-height: 38px; '+
+            'margin: 3px 20px 0 0; user-select: none; } '+
+            '._20HBv-D7 { pointer-events: none; }</style></div>';
+        if(!topics.querySelector('#lac')){
+            topics.insertAdjacentHTML('afterbegin', sw); }
+
+        let lac=topics.querySelector('#lac');
+        if(lac){
+            lac.onclick=(event)=>{
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                disp_panel();
+            }}}
+
+} // check_login()
+
+
+
+function disp_panel(){
+    let disp=
+        '<div id="lac_disp"><span>　</span>　<button id="lac_reset">Reset</button>'+
+        '<style>'+
+        '#lac_disp { position: absolute; top: -3px; left: 50px; z-index: calc(infinity); '+
+        'font: normal 16px Meiryo; width: 210px; padding: 8px 12px 6px; text-align: left; '+
+        'overflow: hidden; border: 1px solid #009688; background: #fff; '+
+        'box-shadow: 2px 2px 6px #00000050; } '+
+        '#lac_reset { position: absolute; right: 12px; top: 4px; font-size: inherit; } '+
+        '</style></div>';
+
+    let lac=document.querySelector('#lac');
+    let lac_disp=document.querySelector('#lac_disp');
+    if(lac && !lac_disp){
+        lac.insertAdjacentHTML('beforeend', disp); }
+    else if(lac && lac_disp){
+        lac_disp.remove(); }
+
+
+    let lac_disp_s=document.querySelector('#lac_disp span');
+    let LAC_after=get_cookie('LAC_count');
+    if(LAC_after && lac_disp_s){
+        let LAC_data=LAC_after.split('　');
+        lac_disp_s.textContent="in: "+ LAC_data[0] +"　out: "+ LAC_data[1]; }
+
+
+    let lac_reset=document.querySelector('#lac_reset');
+    if(lac_reset){
+        lac_reset.onclick=()=>{
+            let LAC='0　0'; //「Login　Logout」
+            document.cookie='LAC_count='+ LAC +'; path=/; Max-Age=604800'; }} // 7日
+
+} // disp_panel()
+
+
+
+function get_cookie(name){
+    let cookie_req=document.cookie.split('; ').find(row=>row.startsWith(name));
+    if(cookie_req){
+        if(cookie_req.split('=')[1]==null){
+            return 0; }
+        else{
+            return cookie_req.split('=')[1]; }}
+    if(!cookie_req){
+        return 0; }}
+
+
+
+
