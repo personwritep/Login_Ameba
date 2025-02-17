@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name         Login Ameba Count + AD Check
-// @namespace    http://tampermonkey.net/
-// @version      0.8
-// @description  ブログページでログイン・アウト状況のカウンター＋ADダイアログ観測
-// @author       Ameba Blog User
+// @name        Login Ameba Count + AD Check
+// @namespace        http://tampermonkey.net/
+// @version        0.8
+// @description        ブログページでログイン・アウト状況のカウンター＋ADダイアログ観測
+// @author        Ameba Blog User
 // @match        https://ameblo.jp/*
-// @icon         https://www.google.com/s2/favicons?sz=64&domain=ameblo.jp
+// @icon        https://www.google.com/s2/favicons?sz=64&domain=ameblo.jp
 // @noframes
 // @grant        none
 // @updateURL        https://github.com/personwritep/Login_Ameba/raw/main/Login_Ameba_Count.user.js
