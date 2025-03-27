@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Login Ameba
 // @namespace        http://tampermonkey.net/
-// @version        1.1
+// @version        1.2
 // @description        ブログページで自動ログイン
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -15,6 +15,8 @@
 
 
 if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しない
+
+    let panel=0; // パネルの開閉
 
     let yy_pos=sessionStorage.getItem('LA_pos');
     if(yy_pos>0){
@@ -32,13 +34,39 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
     let interval=setInterval(wait_target, 500);
     function wait_target(){
         retry++;
-        if(retry>delay){ // リトライ制限 4回 2secまで（dalay 初期値）
+        if(retry<=delay){ // リトライ 4回 2sec以内（dalay 初期値）
+            fuse(); }
+        if(retry>delay){ // リトライ 2sec より後（dalay 初期値）
             try_login();
             clearInterval(interval); }
         let login_user=document.querySelector('._3qMawLFY');
         if(login_user){
             set_delay();
             clearInterval(interval); }}
+
+
+
+    function fuse(){
+        let topics=document.querySelector('._TiKJItsG');
+        if(topics){ //「🛡️」ボタンを表示
+            let sw=
+                '<div id="la"><div id="laf_sw">🛡️</div>'+
+                '<style>'+
+                '#la { position: relative; z-index: 1; user-select: none; } '+
+                '#laf_sw { font-size: 26px; line-height: 40px; margin: 3px 10px 0 0; filter:grayscale(1); } '+
+                '</style></div>';
+
+            if(!topics.querySelector('#la')){
+                topics.insertAdjacentHTML('afterbegin', sw); }}
+
+        let laf=document.querySelector('#laf_sw');
+        if(laf){
+            laf.onclick=(event)=>{
+                event.preventDefault();
+                laf.style.filter='brightness(0)';
+                clearInterval(interval); }}
+
+    } // fuse()
 
 
 
@@ -64,10 +92,10 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
             'C105 48 84 37 69 40M70 94C58 99 66 118 78 112C90 107 82 89 70 94z">'+
             '</path></svg>';
 
-        let topics=document.querySelector('._TiKJItsG');
-        if(topics){ //「🛡️」ボタンを表示
-            let sw=
-                '<div id="la"><div id="la_sw">🛡️</div>'+
+        let la=document.querySelector('#la');
+        if(la){ //「🛡️」ボタンのパネルを生成
+            let panel_la=
+                '<div id="la_sw">🛡️</div>'+
                 '<div id="la_disp">Check Delay: '+
                 '<input id="la_set" type="number" min="0.5" max="10" step="0.5">'+
                 '<span id="la_sec">sec</span>'+
@@ -75,67 +103,64 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
                 SVG_la +'</a>'+
                 '</div>'+
                 '<style>'+
-                '#la { position: relative; z-index: 1; user-select: none; display: flex; } '+
+                '#la { position: relative; z-index: 1; user-select: none; } '+
                 '#la_sw { font-size: 26px; line-height: 40px; margin: 3px 10px 0 0; } '+
-                '#la_disp { position: relative; font: normal 16px Meiryo; text-align: left; '+
-                'padding: 4px 12px 0; width: 200px; height: 35px; overflow: hidden; '+
-                'color: #000; border: 1px solid #009688; background: #eff5ff; '+
-                'box-shadow: 2px 2px 6px #00000050; } '+
+                '#la_disp { position: absolute; font: normal 16px Meiryo; text-align: left; '+
+                'color: #000; padding: 4px 12px 0; width: 200px; height: 35px; '+
+                'top: 0; left: 46px; border: 1px solid #009688; background: #eff5ff; '+
+                'box-shadow: 2px 2px 6px #00000050; overflow: hidden; display: none; } '+
                 '#la_set { position: relative; font: normal 16px/23px Meiryo; caret-color: #fff; '+
                 'padding: 4px 7px 0 9px; width: 54px; border: revert; z-index: 1; } '+
                 '#la_set:hover { z-index: 3; } '+
                 '#la_sec { position: absolute; right: 38px; bottom: 6px; height: 24px; '+
                 'font-size: 16px; background: #fff; z-index: 2; } '+
                 '#svg_la { height: 16px; padding: 0 7px; fill: #028fff; vertical-align: -2px; } '+
-                '</style></div>';
+                '</style>';
 
-            if(!topics.querySelector('#la')){
-                topics.insertAdjacentHTML('afterbegin', sw); }
+            if(!la.querySelector('#la_disp')){
+                la.innerHTML=panel_la; }
 
-            let la=document.querySelector('#la');
-            let la_disp;
-            if(la){
-                la_disp=la.querySelector('#la_disp');
-                if(la_disp){
-                    la_disp.style.display='none'; }}
-
-            let la_sw=la.querySelector('#la_sw');
+            let la_sw=document.querySelector('#la_sw');
             if(la_sw){
                 la_sw.onclick=(event)=>{
                     event.preventDefault();
-                    disp_panel(la);
-                }}
+                    disp_panel(); }}
+
         } // if(topics)
 
     } // set_delay()
 
 
 
-    function disp_panel(la){
-        let la_disp=la.querySelector('#la_disp');
-        if(la_disp){
-            if(la_disp.style.display=='none'){
-                la_disp.style.display='block';
-                la.style.marginRight='-206px'; }
+    function disp_panel(){
+        let la=document.querySelector('#la');
+        let la_disp=document.querySelector('#la_disp');
+        if(la && la_disp){
+            if(panel==0){
+                panel=1;
+                set();
+                la_disp.style.display='block'; }
             else{
-                la_disp.style.display='none';
-                la.style.marginRight='0'; }}
+                panel=0;
+                la_disp.style.display='none'; }}
 
+        function set(){
+            let la_set=la.querySelector('#la_set');
+            if(la_set){
+                la_set.value=(get_cookie('LA_delay')*(0.5)).toFixed(1);
 
-        let la_set=la.querySelector('#la_set');
-        if(la_set){
-            la_set.value=(get_cookie('LA_delay')*(0.5)).toFixed(1);
+                la_set.oninput=(event)=>{
+                    event.preventDefault();
+                    let set;
+                    if(la_set.value<0.5){
+                        set=1; }
+                    else{
+                        set=Math.round(la_set.value/0.5); }
+                    la_set.value=(set*(0.5)).toFixed(1);
+                    delay=set;
+                    document.cookie='LA_delay='+ delay +'; path=/; Max-Age=604800'; }} // 7日
 
-            la_set.oninput=(event)=>{
-                event.preventDefault();
-                let set;
-                if(la_set.value<0.5){
-                    set=1; }
-                else{
-                    set=Math.round(la_set.value/0.5); }
-                la_set.value=(set*(0.5)).toFixed(1);
-                delay=set;
-                document.cookie='LA_delay='+ delay +'; path=/; Max-Age=604800'; }} // 7日
+        } // set()
 
     } // disp_panel()
 
