@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Login Ameba
 // @namespace        http://tampermonkey.net/
-// @version        1.2
+// @version        1.3
 // @description        ブログページで自動ログイン
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -54,6 +54,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
                 '<style>'+
                 '#la { position: relative; z-index: 1; user-select: none; } '+
                 '#laf_sw { font-size: 26px; line-height: 40px; margin: 3px 10px 0 0; filter:grayscale(1); } '+
+                '#acmp-opt-in { display: none; } '+
                 '</style></div>';
 
             if(!topics.querySelector('#la')){
