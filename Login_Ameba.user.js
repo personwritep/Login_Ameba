@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Login Ameba
 // @namespace        http://tampermonkey.net/
-// @version        1.4
+// @version        1.5
 // @description        ブログページで自動ログイン
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -39,7 +39,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
         if(retry>delay){ // リトライ 2sec より後（dalay 初期値）
             try_login();
             clearInterval(interval); }
-        let login_user=document.querySelector('._3qMawLFY');
+        let login_user=document.querySelector('._2g4ltB70');
         if(login_user){
             set_delay();
             clearInterval(interval); }}
@@ -47,7 +47,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
 
 
     function fuse(){
-        let topics=document.querySelector('._TiKJItsG');
+        let topics=document.querySelector('._3DS81Rv5');
         if(topics){ //「🛡️」ボタンを表示
             let sw=
                 '<div id="la"><div id="laf_sw">🛡️</div>'+
@@ -75,7 +75,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
         let y_pos=document.documentElement.scrollTop
         sessionStorage.setItem('LA_pos', y_pos);
 
-        let sw=document.querySelector('._Ja750p9p > a');
+        let sw=document.querySelector('._2nlOk1N- > a');
         if(sw){
             sw.click(); }}
 
