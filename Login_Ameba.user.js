@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Login Ameba
 // @namespace        http://tampermonkey.net/
-// @version        1.6
+// @version        1.7
 // @description        ブログページで自動ログイン
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -169,13 +169,17 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
 
 
     function get_cookie(name){
-        let cookie_req=document.cookie.split('; ').find(row=>row.startsWith(name));
-        if(cookie_req){
-            if(cookie_req.split('=')[1]==null){
+        let cookie_req=document.cookie.split(';');
+        for(let k=0; k<cookie_req.length; k++){
+            cookie_req[k]=cookie_req[k].trim(); } // 前後の空白を削除
+
+        let cookie=cookie_req.find(row=>row.startsWith(name+'='));
+        if(cookie){
+            if(cookie.split('=')[1]==null){
                 return 0; }
             else{
-                return cookie_req.split('=')[1]; }}
-        if(!cookie_req){
+                return cookie.split('=')[1]; }}
+        if(!cookie){
             return 0; }}
 
 } // if(location.hash!='#cbox')
