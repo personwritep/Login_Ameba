@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        Login Ameba
 // @namespace        http://tampermonkey.net/
-// @version        1.7
+// @version        1.8
 // @description        ブログページで自動ログイン
 // @author        Ameba Blog User
 // @match        https://ameblo.jp/*
@@ -39,7 +39,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
         if(retry>delay){ // リトライ 2sec より後（dalay 初期値）
             try_login();
             clearInterval(interval); }
-        let login_user=document.querySelector('._cYUCZzXl');
+        let login_user=document.querySelector('button[class="_ZI4Sx+Pb"]');
         if(login_user){
             set_delay();
             clearInterval(interval); }}
@@ -47,7 +47,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
 
 
     function fuse(){
-        let topics=document.querySelector('._38cuTj6i');
+        let topics=document.querySelector('._MIZ7C7Jp');
         if(topics){ //「🛡️」ボタンを表示
             let sw=
                 '<div id="la"><div id="laf_sw">🛡️</div>'+
@@ -57,8 +57,8 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
                 '#acmp-opt-in { display: none; } '+
                 '</style></div>';
 
-            if(!topics.querySelector('#la')){
-                topics.insertAdjacentHTML('afterbegin', sw); }}
+            if(!document.querySelector('#la')){
+                topics.insertAdjacentHTML('beforebegin', sw); }}
 
         let laf=document.querySelector('#laf_sw');
         if(laf){
@@ -75,7 +75,7 @@ if(location.hash!='#cbox'){ // #cbox付きURLで開いた場合は機能しな�
         let y_pos=document.documentElement.scrollTop
         sessionStorage.setItem('LA_pos', y_pos);
 
-        let sw=document.querySelector('._fbyAvla9 > a');
+        let sw=document.querySelector('._goyQ2f6w > a');
         if(sw){
             sw.click(); }}
 
